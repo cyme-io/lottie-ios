@@ -179,10 +179,17 @@ extension CATransform3D {
   }
   
   func skewed(skew: CGFloat, skewAxis: CGFloat) -> CATransform3D {
+    guard abs(skew) != 0 else {
+        return CATransform3DIdentity
+      }
     return CATransform3DConcat(CATransform3D.makeSkew(skew: skew, skewAxis: skewAxis), self)
   }
   
   static func makeSkew(skew: CGFloat, skewAxis: CGFloat) -> CATransform3D {
+    guard abs(skew) != 0 else {
+        return CATransform3DIdentity
+      }
+    
     let mCos = cos(skewAxis.toRadians())
     let mSin = sin(skewAxis.toRadians())
     let aTan = tan(skew.toRadians())
