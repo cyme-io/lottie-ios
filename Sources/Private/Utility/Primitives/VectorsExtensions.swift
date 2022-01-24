@@ -187,9 +187,9 @@ extension CGSize {
 }
 
 extension CATransform3D {
-  static func makeSkew(skew: CGFloat, skewAxis: CGFloat) -> CATransform3D {
-    guard abs(skew) != 0 else {
-        return CATransform3DIdentity
+  static func makeSkew(skew: CGFloat, skewAxis: CGFloat) -> CATransform3D? {
+      guard abs(skew) > 1.0e-5 else {
+        return nil
       }
     
     let mCos = cos(skewAxis.toRadians())
@@ -262,8 +262,11 @@ extension CATransform3D {
     -> CATransform3D
   {
     if let skew = skew, let skewAxis = skewAxis {
-      return CATransform3DMakeTranslation(position.x, position.y, 0).rotated(rotation).skewed(skew: -skew, skewAxis: skewAxis)
-        .scaled(scale * 0.01).translated(anchor * -1)
+        return CATransform3DMakeTranslation(position.x, position.y, 0)
+            .rotated(rotation)
+            //.skewed(skew: -1.0*skew, skewAxis: skewAxis)
+        .scaled(scale * 0.01)
+        .translated(anchor * -1)
     }
     return CATransform3DMakeTranslation(position.x, position.y, 0).rotated(rotation).scaled(scale * 0.01).translated(anchor * -1)
   }
@@ -281,6 +284,9 @@ extension CATransform3D {
   }
 
   func skewed(skew: CGFloat, skewAxis: CGFloat) -> CATransform3D {
-    CATransform3DConcat(CATransform3D.makeSkew(skew: skew, skewAxis: skewAxis), self)
+      if let skewT = CATransform3D.makeSkew(skew: skew, skewAxis: skewAxis) {
+          return CATransform3DConcat(self, skewT)
+      }
+    return self
   }
 }
