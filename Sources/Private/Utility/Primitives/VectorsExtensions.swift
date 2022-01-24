@@ -187,8 +187,11 @@ extension CGSize {
 }
 
 extension CATransform3D {
-
   static func makeSkew(skew: CGFloat, skewAxis: CGFloat) -> CATransform3D {
+    guard abs(skew) != 0 else {
+        return CATransform3DIdentity
+      }
+    
     let mCos = cos(skewAxis.toRadians())
     let mSin = sin(skewAxis.toRadians())
     let aTan = tan(skew.toRadians())
